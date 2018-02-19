@@ -1,11 +1,5 @@
 # This is an app to create controls for a foscam camera
 
-from 2018/1/1 i dont support HA versions below 0.55 anymore because of the breaking changes and i have moved to 0.60
-changes, improvement and bug removal is only done in the V2 for 0.55 and higher.
-
-this app is not yet up to date for appdaemon 3.0Beta. I tested it and it will work if you take care of the breaking changes
-I will add the version for that appdaemon version in a short while.
-
 ![Alt text](images/camera_new_skinless_release.jpg)
 ![Alt text](images/foscam_main_settings.jpg)![Alt text](images/foscam_picture_settings.jpg)
 ## Cameratypes that work with this
@@ -30,17 +24,14 @@ if this gives back info then you can use the app. please contact me to add the c
   
 ## Installation
 
-- this app can only be used with a working version from Appdaemon (for installation from appdaemon see: http://appdaemon.readthedocs.io/en/latest/index.html ) it expects at least version 2.1.12. it also expects that you have set the setting dash_dir in appdaemon.yaml Default this is pointing to the dir /path/to/conf/dashboards if you didnt set it. But if you want this app to create dashboards it needs that setting. for more info about setting the dash_dir see the appdaemon documentation.
-- besides appdaemon you need to install the custom widgets new_input_slider and vertical_ipnput_slider if you want a full working dashboard you can find them here: https://github.com/ReneTode/My-AppDaemon/tree/master/custom_widgets (if you use appdaemon 3.0 beta or higher those widgets are included, but have different names, i will change that as soon as appdaemon 3.0 goes out of beta)
+- this app can only be used with a working version from Appdaemon 3.0 or higher (for installation from appdaemon see: http://appdaemon.readthedocs.io/en/latest/index.html ) it expects at least version 3.0 .
+- besides appdaemon you need to install the custom widget vertical_input_slider if you want a full working dashboard you can find them here: https://github.com/ReneTode/My-AppDaemon/tree/master/custom_widgets 
 - you need to have the camera added and working in homeassistant
   https://home-assistant.io/components/camera.foscam/
 - create in homeassistant the entities you can find in the file add_to_ha_configuration (input_booleans, input_selects, input_numbers and groups)
 
 if all requirements are met you can install the app.
-- download the file foscam.py and move it to your app directory from appdaemon
-- in your apps.yaml create a new section with these arguments: (example can be found in add_to_apps.yaml)
-from version 0.55 homeassistant uses input_number instead of input_slider!!
-(the settings here are only to show which settings are there and to tell what they are for. please use the settings from the subdir for homeassistant 0.55 or 0.54)
+- download the file foscam.py and foscam.yaml and move it to your apps directory from appdaemon
 
 ```
 foscam:
@@ -84,7 +75,8 @@ foscam:
     snap_picture_switch: input_boolean.foscam_snap_picture_now  # also needs to be created in home assistant
     recording_sensor: sensor.foscam_recording  # the sensor is created automaticly
     save_snap_dir: /home/pi/foscam_snap/   # the dir where you want manual snapshots to be saved
-  dashboardsettings: 
+  dashboardsettings:
+    DashboardDir: /path/to/dashboards/     # in this dir you create your dashboards                          
     use_dashboard: True                    # if this is set to False no dashboards will be created or used
     create_dashboard: True                 # creates a dashboard in your dashboard directory on initialize from the app
     create_alarm_dashboard: True           # creates an alarm dashboard
@@ -106,10 +98,8 @@ if you have done everything right you now can start your dashboard like http://y
 i welcome any feedback you can find discussion and help in this topic:
 https://community.home-assistant.io/t/foscam-app-v2-appdaemon-and-hadashboard/29270
 
-footnotes: 
-1) it is optional to set the dash_dir argument in appdaemon.yaml after installing appdaemon.
-but untill i found a better way that setting is needed. if you dont want it at another place then set your dash_dir to /full/path/to/conf/dashboards
-2) to make sure this app is working like you want to you need to set some settings in the foscam app, before you start this app. motion detection needs to be set to on with all settings set to how you like it. the app can then save those settings during the initialisation and reuse them every time you activate motion detection. also it is wise to set all cruisepresets and preset positions in the foscam app before you add the input_selects to home assistant. during the initialisation the app gets the following settings from your cam: motion detection settings, picture settings like brightness, contrast, etc, flip and mirrorstate, infraredstate. every 10 seconds (or the amount of time you have set in the settings) the app gets the following settings from your cam: motion detection, recording, sound detection, infrared state
-3) zoom and PTZ movement are done by changing the sliders. the more you move the slider away from the center, the higher the speed. movement and zoom automaticly stops after 1 second, unless you start cruises.
-4) the R2 type uses a slightly different configuration. to get it to work allright you need to edit the foscam.py
+## footnotes: 
+1) to make sure this app is working like you want to you need to set some settings in the foscam app, before you start this app. motion detection needs to be set to on with all settings set to how you like it. the app can then save those settings during the initialisation and reuse them every time you activate motion detection. also it is wise to set all cruisepresets and preset positions in the foscam app before you add the input_selects to home assistant. during the initialisation the app gets the following settings from your cam: motion detection settings, picture settings like brightness, contrast, etc, flip and mirrorstate, infraredstate. every 10 seconds (or the amount of time you have set in the settings) the app gets the following settings from your cam: motion detection, recording, sound detection, infrared state
+2) zoom and PTZ movement are done by changing the sliders. the more you move the slider away from the center, the higher the speed. movement and zoom automaticly stops after 1 second, unless you start cruises.
+3) the R2 type uses a slightly different configuration. to get it to work allright you need to edit the foscam.py
 find the lines that say getMotionDetectConfig and setMotionDetectConfig and change that to getMotionDetectConfig1 and setMotionDetectConfig1

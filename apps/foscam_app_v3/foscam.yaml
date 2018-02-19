@@ -13,22 +13,22 @@ foscam:
     logsensorlevel: WARNING
     last_error_sensor: sensor.foscam_last_error
   picsettings:
-    brightness_slider: input_slider.foscam_brightness
-    contrast_slider: input_slider.foscam_contrast
-    hue_slider: input_slider.foscam_hue
-    saturation_slider: input_slider.foscam_saturation
-    sharpness_slider: input_slider.foscam_sharpness
+    brightness_slider: input_number.foscam_brightness
+    contrast_slider: input_number.foscam_contrast
+    hue_slider: input_number.foscam_hue
+    saturation_slider: input_number.foscam_saturation
+    sharpness_slider: input_number.foscam_sharpness
     default_pic_settings_switch: input_boolean.foscam_default_picture_settings
     flip_switch: input_boolean.foscam_flip
     mirror_switch: input_boolean.foscam_mirror
     auto_infrared_switch: input_boolean.foscam_auto_infrared
     infrared_switch: input_boolean.foscam_infrared
   ptzsettings:
-    left_right_slider: input_slider.foscam_left_right
-    up_down_slider: input_slider.foscam_up_down
+    left_right_slider: input_number.foscam_left_right
+    up_down_slider: input_number.foscam_up_down
     start_cruise_select: input_select.foscam_preset_cruise
     stop_cruise_switch: input_boolean.foscam_stop_cruise
-    zoom_slider: input_slider.foscam_zoom
+    zoom_slider: input_number.foscam_zoom
     preset_points_select: input_select.foscam_preset_points
   alarmsettings:
     motion_sensor: sensor.foscam_motion
@@ -40,6 +40,7 @@ foscam:
     recording_sensor: sensor.foscam_recording
     save_snap_dir: #/complete/path/to/where/to/save/
   dashboardsettings: 
+    DashboardDir: #/path/to/your/dashboards/
     use_dashboard: True
     create_dashboard: True
     create_alarm_dashboard: True

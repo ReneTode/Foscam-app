@@ -8,11 +8,13 @@
 #                                                                                         #
 #  args:                                                                                  #
 #  see the readme on                                                                      #
-#  https://github.com/ReneTode/My-AppDaemon/tree/master/apps/foscam_app_v2                #
+#  https://github.com/ReneTode/My-AppDaemon/tree/master/apps/foscam_app_v3                #
+#  updated for use with appdaemon 3.0                                                     #
 #                                                                                         #
 ###########################################################################################
 
-import appdaemon.appapi as appapi
+
+import appdaemon.plugins.hass.hassapi as hass
 import datetime
 from urllib.request import urlopen
 import urllib.request
@@ -21,7 +23,7 @@ import time
 import xml.etree.ElementTree as ET
 import requests
 
-class foscam(appapi.AppDaemon):
+class foscam(hass.Hass):
 
   def initialize(self):
 
@@ -367,6 +369,11 @@ class foscam(appapi.AppDaemon):
     except requests.exceptions.ReadTimeout:
       self.my_log(" Camera took more then 10 seconds", "INFO")
       return ""
+    except requests.exceptions.ConnectionError:
+      self.my_log(" Camera could not be reached", "WARNING")
+      return ""
+    except Exception as x:
+      self.my_log("Unknown error: " +  x.__class__.__name__)
     if data[0].text == "0":
       self.my_log(" Camera state ok", "INFO")
       return data
@@ -413,7 +420,7 @@ class foscam(appapi.AppDaemon):
 
   def create_dashboard(self):
     try:
-      with open(self.config["HADashboard"]["dash_dir"] + "/" + self.dashboardsettings["dashboard_file_name"] + ".dash", 'w') as dashboard:
+      with open(self.dashboardsettings["DashboardDir"] + self.dashboardsettings["dashboard_file_name"] + ".dash", 'w') as dashboard:
         screenwidth = self.dashboardsettings["screen_width"]
         screenheight = self.dashboardsettings["screen_height"]
         widgetwidth = round((screenwidth - 22) / 10)
@@ -440,7 +447,7 @@ class foscam(appapi.AppDaemon):
             '',
             'my_camera:',
             '    widget_type: camera',
-            '    entity_picture: ' + self.config["HASS"]["ha_url"] + '/api/camera_proxy_stream/camera.' + self.camera_name + '?api_password=' + self.config["HASS"]["ha_key"],
+            '    entity_picture: ' + self.config["plugins"]["HASS"]["ha_url"] + '/api/camera_proxy_stream/camera.' + self.camera_name + '?api_password=' + self.config["plugins"]["HASS"]["ha_key"],
             '    title: ' + self.camera_name,
             '    refresh: 120',
             self.recording_sensor + ':',
@@ -512,7 +519,7 @@ class foscam(appapi.AppDaemon):
             '',
             'my_camera:',
             '    widget_type: camera',
-            '    entity_picture: ' + self.config["HASS"]["ha_url"] + '/api/camera_proxy_stream/camera.' + self.camera_name + '?api_password=' + self.config["HASS"]["ha_key"],
+            '    entity_picture: ' + self.config["plugins"]["HASS"]["ha_url"] + '/api/camera_proxy_stream/camera.' + self.camera_name + '?api_password=' + self.config["plugins"]["HASS"]["ha_key"],
             '    title: ' + self.camera_name,
             '    refresh: 120',
             self.recording_sensor + ':',
@@ -570,7 +577,7 @@ class foscam(appapi.AppDaemon):
             '',
             'my_camera:',
             '    widget_type: camera',
-            '    entity_picture: ' + self.config["HASS"]["ha_url"] + '/api/camera_proxy_stream/camera.' + self.camera_name + '?api_password=' + self.config["HASS"]["ha_key"],
+            '    entity_picture: ' + self.config["plugins"]["HASS"]["ha_url"] + '/api/camera_proxy_stream/camera.' + self.camera_name + '?api_password=' + self.config["plugins"]["HASS"]["ha_key"],
             '    title: ' + self.camera_name,
             '    refresh: 120',
             self.recording_sensor + ':',
@@ -612,19 +619,19 @@ class foscam(appapi.AppDaemon):
           dashboard.write(line + '\n')
     except IOError as e:
       self.log("I/O error({0}): {1} : dashboard couldnt be written".format(e.errno, e.strerror),"ERROR")
-      self.log("tried to write: " + self.config["HADashboard"]["dash_dir"] + "/" + self.dashboardsettings["dashboard_file_name"] + ".dash","ERROR")
+      self.log("tried to write: " + self.dashboardsettings["DashboardDir"] + self.dashboardsettings["dashboard_file_name"] + ".dash","ERROR")
     except TypeError:
       self.log("one of the arguments has the wrong type","ERROR")
     except ValueError:
       self.log("width or height isnt given as a correct integer","ERROR")
     except:
       self.log("unexpected error: dashboard couldnt be written", "ERROR")
-      self.log("tried to write: " + self.config["HADashboard"]["dash_dir"] + "/" + self.dashboardsettings["dashboard_file_name"] + ".dash","ERROR")
+      self.log("tried to write: " + self.dashboardsettings["DashboardDir"] + self.dashboardsettings["dashboard_file_name"] + ".dash","ERROR")
 
 
   def create_alarm_dashboard(self):
     try:
-      with open(self.config["HADashboard"]["dash_dir"] + "/" + self.dashboardsettings["alarm_dashboard_file_name"] + ".dash", 'w') as dashboard:
+      with open(self.dashboardsettings["DashboardDir"] + self.dashboardsettings["alarm_dashboard_file_name"] + ".dash", 'w') as dashboard:
         screenwidth = self.dashboardsettings["screen_width"]
         screenheight = self.dashboardsettings["screen_height"]
         widgetwidth = round((screenwidth - 22) / 10)
@@ -645,18 +652,18 @@ class foscam(appapi.AppDaemon):
           '',
           'my_camera:',
           '    widget_type: camera',
-          '    entity_picture: ' + self.config["HASS"]["ha_url"] + '/api/camera_proxy_stream/camera.' + self.camera_name + '?api_password=' + self.config["HASS"]["ha_key"],
+          '    entity_picture: ' + self.config["plugins"]["HASS"]["ha_url"] + '/api/camera_proxy_stream/camera.' + self.camera_name + '?api_password=' + self.config["plugins"]["HASS"]["ha_key"],
           '    title: ' + self.camera_name,
         ]
         for line in dashboardlines:
           dashboard.write(line + '\n')
     except IOError as e:
       self.log("I/O error({0}): {1} : dashboard couldnt be written".format(e.errno, e.strerror),"ERROR")
-      self.log("tried to write: " + self.config["HADashboard"]["dash_dir"] + "/" + self.dashboardsettings["alarm_dashboard_file_name"] + ".dash")
+      self.log("tried to write: " + self.dashboardsettings["DashboardDir"] + self.dashboardsettings["alarm_dashboard_file_name"] + ".dash")
     except TypeError:
       self.log("one of the arguments has the wrong type","ERROR")
     except ValueError:
       self.log("width or height isnt given as a correct integer","ERROR")
     except:
       self.log("unexpected error: dashboard couldnt be written", "ERROR")
-      self.log("tried to write: " + self.config["HADashboard"]["dash_dir"] + "/" + self.dashboardsettings["alarm_dashboard_file_name"] + ".dash")
+      self.log("tried to write: " + self.dashboardsettings["DashboardDir"] + self.dashboardsettings["alarm_dashboard_file_name"] + ".dash")

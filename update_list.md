@@ -15,3 +15,7 @@
 2.0.3 (2018/1/24)
   - changed the logging to intercept timeout exceptions.
   - changed timeout logging level from warning to info
+
+3.0 (2018/2/19)
+  - updated for appdaemon 3.0
+  - added dashboard dir to yaml
