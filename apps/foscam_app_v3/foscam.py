@@ -624,10 +624,12 @@ class foscam(hass.Hass):
       self.log("one of the arguments has the wrong type","ERROR")
     except ValueError:
       self.log("width or height isnt given as a correct integer","ERROR")
+    except KeyError:
+      self.log("one of the needed arguments is missing, check the yaml and dont forget about the ha_ket in appdaemon.yaml", "ERROR")
     except:
       self.log("unexpected error: dashboard couldnt be written", "ERROR")
       self.log("tried to write: " + self.dashboardsettings["DashboardDir"] + self.dashboardsettings["dashboard_file_name"] + ".dash","ERROR")
-
+      self.log(e)
 
   def create_alarm_dashboard(self):
     try:
